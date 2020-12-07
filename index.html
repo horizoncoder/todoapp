@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <title>Day 4</title>
+</head>
+<body>
+  <div id="app">
+    <br>
+
+    <div class="info">
+      <h3 class="task_info"><center>{{" Студентов: "+ tasks.length}}</center></h3>
+      <h3 class="task_info"><center>ФИО Группа Оценка Сдал ПР</center></h3>
+    </div>
+    
+    <task @task_remove="delete_task(index)" :key="index" v-for="(data,index) in tasks" :data="data" >
+    
+    </task>
+   
+
+    <div class="add_task">
+      <div class="add_task_input ">
+          <input placeholder="ФИО" type="text" v-model="new_task.title">
+          <select v-model="new_task.group">
+            <option disabled value="RPZ 17 1/9">Выбирете группу</option>
+            <option>РПЗ 17 1/9</option>
+            <option>РПЗ 17 2/9</option>
+        </select>
+        <br>
+        <input placeholder="поставьте оценку" type="number" v-model = "new_task.ball">
+        
+
+       
+        <h3 class="task_title">   Сдал ПР</h3> <input placeholder="" type="checkbox" id="pr" value="ПР" v-model="new_task.pr" >
+
+      
+
+          <input placeholder="Поиск" type="text" v-model="SearchStr">
+            
+          <ul>
+            <li v-for="(item, index) of filteredtasks" :key="index" v-bind:class=" SearchStr.length > 0 ? 'red' : 'black'" >{{ item.title }}</li>
+          </ul>
+          
+      </div>
+      <button class="add_task_btn" @click="add_task">ADD</button>
+      
+    </div>
+  </div>
+  
+</body>
+<script>
+Vue.component('task',{
+  props: ['data'],
+  data() {
+    return {
+     
+    }
+  },
+  methods: {
+    task_remove(){
+      this.$emit('task_remove')
+    }
+    
+  },
+  template:`
+  <div class="task">
+  
+    <div>
+      
+      <h3 type="text" class="task_title">{{data.title}}</h3>
+      <h3 type="text" class="task_title">{{data.group}}</h3>
+      <h3 type="text" class="task_title">{{data.ball}}</h3>
+      <h3 type="text" class="task_title">{{data.pr}}</h3>
+      {{ tasks }}
+
+
+    </div>
+    <button class="task_done" @click="task_remove()">❌</button>
+  </div>`
+})
+
+var vue = new Vue({
+  el: '#app',
+  data: {
+    string: '',
+    new_task: {
+      title: '',
+      group: '',
+      ball:'',
+      pr: '',
+    
+     
+    },
+    tasks : [
+      {
+        title: 'Дима Белименко',
+        group: 'РПЗ 17 1/9',
+        ball: 5,
+        pr: `✔️`,
+
+      },
+      {
+        title: 'Дмитрий',
+        group: 'РПЗ 17 2/9',
+        ball: 5,
+        pr: `✗`,
+      }
+    ],
+    SearchStr: ''
+  },
+  methods: {
+    add_task(){
+      if(this.new_task.pr==true){
+        this.new_task.pr=`✔️`
+      }
+      else if(this.new_task.pr==false){
+        this.new_task.pr=`✗`
+      }
+
+      if(this.new_task.title != ''){
+        this.tasks.push({
+          title: this.new_task.title,
+          group: this.new_task.group,
+          ball: this.new_task.ball,
+          pr:this.new_task.pr,
+         
+          
+        });
+        
+        this.new_task.title='';
+        this.new_task.group='';
+        this.new_task.ball='';
+        this.new_task.pr='';
+      }
+     
+      
+     
+    },
+    delete_task(id){
+      this.tasks.splice(id,1);
+    }
+  },
+  computed: {
+    filteredtasks() {
+      if (this.SearchStr) {
+        return this.tasks.filter(item => {
+            return item.title.includes(this.SearchStr);
+        });
+      }
+      return this.tasks
+    }
+  }
+})
+</script>
+
+<style>
+    :root {
+  --main: hsl(140, 69%, 35%);
+  
+}
+* {
+  padding: 0;
+  margin: 0;
+  transition: all 0.3s;
+}
+#app{
+  display: block;
+    margin-left: auto;
+    margin-right: auto;
+  width: 820px;
+  box-shadow: 0 3px 20px #00000023;
+}
+
+.info {
+  
+  margin: 0px auto;
+
+}
+.task_info {
+
+  padding: 20px;
+  background-color: var(--main);
+  color: black;
+  font-weight: 500;
+}
+.task {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 30px;
+  max-width: 100%;
+}
+.task:hover {
+  background-color: #2f485811;
+}
+.task_title {
+  font-size: 18px;
+  color: black;
+}
+.task_group {
+  font-weight: 500;
+  font-size: 18px;
+  color: black;
+}
+.task_done {
+  height: 30px;
+  width: 30px !important;
+  border: none;
+  background-color: unset;
+}
+.task_done:hover {
+  cursor: pointer;
+  border-radius: 4px;
+  background-color: #9ee493bb;
+}
+.add_task {
+  display: flex;
+  
+}
+.add_task_input {
+  width: 80%;
+}
+.add_task_input input, textarea {
+  width: 100%;
+  max-width: 100%;
+  padding: 5px 0 5px 5px;
+  font-family: 'Gilroy',sans-serif;
+  border: 2px solid #2f485811;
+  border-radius: 4px;
+}
+.add_task_input  {
+  margin-bottom: 5px;
+}
+.add_task_btn {
+  width: 20%;
+  border: none;
+  margin-left: 40px;
+  background-color: unset;
+}
+.add_task_btn:hover {
+  cursor: pointer;
+  border-radius: 4px;
+  background-color: #2f485811;
+}
+ul{
+  
+  margin-left: 20px;
+
+}
+
+.red{
+            color: red;
+        }
+ .black{
+            color: black;
+        }
+
+</style>
+</html>
